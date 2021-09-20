@@ -11,14 +11,15 @@ import numpy as np
 # Constants
 inputPath = "C:/Users/Noah Sims/.spyder-py3/AI_HW1_SearchAlgs/input.txt"
 SOLUTION = np.array([[1,2,3],[4,0,5],[6,7,8]])
+DEPTH_LIMIT = 10
 
 # takes a puzzle matrix and returns the position of the empty tile as an ordered pair
 def findEmpty(puzzleMat):
     pos = []
     for row in range(0, len(puzzleMat)):
-        print("row = " + str(row))
+        #print("row = " + str(row))
         for col in range(0, len(puzzleMat[row])):
-            print("col = " + str(col))
+            #print("col = " + str(col))
             if(puzzleMat[row][col] == 0):
                 pos = [row, col]
                 break
@@ -94,14 +95,74 @@ def moveWest(puzzleMat):
 # end moveWest()
 
 class TreeNode:
-    def __init__(self, parentNode, puzzleMat):
+    def __init__(self, parentNode, puzzleMat, depth, statesVisited):
         self.parent = parentNode
+        self.currentChild = None # we don't need to keep the whole tree stored in memory
         self.puzzle = puzzleMat
-        self.depth = 0
+        self.depth = depth
+        self.statesVisited = statesVisited
     # end init()
     
-    def dfs():
-        pass
+    def avoidRepeats(self, newPuzzle):
+        parent = self.parent
+        while(parent is not None):
+            if(np.array_equal(newPuzzle, parent.puzzle)):
+                return False
+            else:
+                parent = parent.parent
+        return True
+    
+    def dfs(self):
+        if(np.array_equal(self.puzzle, SOLUTION)):
+            self.currentChild = None
+            return True
+        elif(self.depth == DEPTH_LIMIT):
+            self.currentChild = None
+            return False
+        else:
+            # check children
+            for i in range(0, 4):
+                nextPuzzle = None
+                if(i == 0):
+                    nextPuzzle = moveNorth(self.puzzle)
+                elif(i == 1):
+                    nextPuzzle = moveEast(self.puzzle)
+                elif(i == 2):
+                    nextPuzzle = moveSouth(self.puzzle)
+                elif(i == 3):
+                    nextPuzzle = moveWest(self.puzzle)
+                
+                if(nextPuzzle is not None):
+                    if(self.avoidRepeats(nextPuzzle)):
+                        self.currentChild = TreeNode(self, nextPuzzle, self.depth + 1, self.statesVisited + 1)
+                        if(self.currentChild.dfs()):
+                            self.statesVisited = self.currentChild.statesVisited
+                            return True
+                        else:
+                            self.statesVisited = self.currentChild.statesVisited
+            # end for i
+        # end else
+    # end dfs()
+    
+    def printMoves(self):
+        print("Initial State: ")
+        print(self.puzzle)
+        
+        numMoves = 0
+        numStates = 0
+        child = self.currentChild
+        while(child is not None):
+            print("\n")
+            print(child.puzzle)
+            numStates = child.statesVisited
+            numMoves += 1
+            child = child.currentChild
+        
+        print("Number of moves = " + str(numMoves))
+        print("Number of states enqueued = " + str(numStates))
+    # end printMoves()
+    
+# end TreeNode
 
 def parseMatrix(line):
     puzzleMat = []
@@ -145,9 +206,15 @@ if __name__ == "__main__":
         
     lines = readInput(args[2])
     puzzleMat = parseMatrix(lines[0])
-    print(puzzleMat)
-    print(SOLUTION)
-    newMat = moveWest(SOLUTION)
-    print(newMat)
-    print(SOLUTION)
+    #print(puzzleMat)
+    #print(SOLUTION)
+    #newMat = moveWest(SOLUTION)
+    #print(newMat)
+    #print(SOLUTION)
+    
+    root = TreeNode(None, puzzleMat, 0, 0)
+    if(root.dfs()):
+        root.printMoves()
+    else:
+        print("DFS failed after " + str(root.statesVisited) + " states enqueued")
 # end main()
