@@ -95,11 +95,12 @@ def moveWest(puzzleMat):
 # end moveWest()
 
 class TreeNode:
-    def __init__(self, parentNode, puzzleMat, depth, statesVisited):
+    def __init__(self, parentNode, puzzleMat, depth, depthLimit, statesVisited):
         self.parent = parentNode
         self.currentChild = None # we don't need to keep the whole tree stored in memory
         self.puzzle = puzzleMat
         self.depth = depth
+        self.depthLimit = depthLimit
         self.statesVisited = statesVisited
     # end init()
     
@@ -116,7 +117,7 @@ class TreeNode:
         if(np.array_equal(self.puzzle, SOLUTION)):
             self.currentChild = None
             return True
-        elif(self.depth == DEPTH_LIMIT):
+        elif(self.depth >= self.depthLimit):
             self.currentChild = None
             return False
         else:
@@ -134,7 +135,7 @@ class TreeNode:
                 
                 if(nextPuzzle is not None):
                     if(self.avoidRepeats(nextPuzzle)):
-                        self.currentChild = TreeNode(self, nextPuzzle, self.depth + 1, self.statesVisited + 1)
+                        self.currentChild = TreeNode(self, nextPuzzle, self.depth + 1, self.depthLimit, self.statesVisited + 1)
                         if(self.currentChild.dfs()):
                             self.statesVisited = self.currentChild.statesVisited
                             return True
@@ -143,6 +144,18 @@ class TreeNode:
             # end for i
         # end else
     # end dfs()
+    
+    def ids(self):
+        limit = self.depthLimit
+        for d in range(0, limit + 1):
+            self.depthLimit = d
+            print("Depth limit = " + str(self.depthLimit))
+            self.statesVisited += 1 # the root node is visited multiple times
+            if(self.dfs()):
+                return True
+        
+        return False
+    # end ids()
     
     def printMoves(self):
         print("Initial State: ")
@@ -206,15 +219,18 @@ if __name__ == "__main__":
         
     lines = readInput(args[2])
     puzzleMat = parseMatrix(lines[0])
-    #print(puzzleMat)
-    #print(SOLUTION)
-    #newMat = moveWest(SOLUTION)
-    #print(newMat)
-    #print(SOLUTION)
     
-    root = TreeNode(None, puzzleMat, 0, 0)
-    if(root.dfs()):
-        root.printMoves()
-    else:
-        print("DFS failed after " + str(root.statesVisited) + " states enqueued")
+    if(args[1] == "dfs"):
+        root = TreeNode(None, puzzleMat, 0, DEPTH_LIMIT, 1)
+        if(root.dfs()):
+            root.printMoves()
+        else:
+            print("DFS failed after " + str(root.statesVisited) + " states enqueued")
+    
+    elif(args[1] == "ids"):
+        root = TreeNode(None, puzzleMat, 0, DEPTH_LIMIT, 0)
+        if(root.ids()):
+            root.printMoves()
+        else:
+            print("IDS failed after " + str(root.statesVisited) + " states enqueued")
 # end main()
