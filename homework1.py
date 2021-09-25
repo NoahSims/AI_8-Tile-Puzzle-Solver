@@ -13,14 +13,14 @@ inputPath = "C:/Users/Noah Sims/.spyder-py3/AI_HW1_SearchAlgs/input.txt"
 SOLUTION = np.array([[1,2,3],[4,0,5],[6,7,8]])
 DEPTH_LIMIT = 10
 
-# takes a puzzle matrix and returns the position of the empty tile as an ordered pair
-def findEmpty(puzzleMat):
+# takes a puzzle matrix and returns the position of a given num as an ordered pair
+def findValue(puzzleMat, num):
     pos = []
     for row in range(0, len(puzzleMat)):
         #print("row = " + str(row))
         for col in range(0, len(puzzleMat[row])):
             #print("col = " + str(col))
-            if(puzzleMat[row][col] == 0):
+            if(puzzleMat[row][col] == num):
                 pos = [row, col]
                 break
         else:
@@ -33,7 +33,7 @@ def findEmpty(puzzleMat):
 # takes a puzzle matrix and returns the matrix with it's empty tile shifted north, or null if it can't be shifted
 def moveNorth(puzzleMat):
     # find empty tile
-    pos = findEmpty(puzzleMat)
+    pos = findValue(puzzleMat, 0)
     
     # if empty tile is in the top row, the empty tile cannot move north
     if(pos[0] == 0):
@@ -49,7 +49,7 @@ def moveNorth(puzzleMat):
 # takes a puzzle matrix and returns the matrix with it's empty tile shifted south, or null if it can't be shifted
 def moveSouth(puzzleMat):
     # find empty tile
-    pos = findEmpty(puzzleMat)
+    pos = findValue(puzzleMat, 0)
     
     # if empty tile is in the top row, the empty tile cannot move north
     if(pos[0] == len(puzzleMat) - 1):
@@ -65,7 +65,7 @@ def moveSouth(puzzleMat):
 # takes a puzzle matrix and returns the matrix with it's empty tile shifted east, or null if it can't be shifted
 def moveEast(puzzleMat):
     # find empty tile
-    pos = findEmpty(puzzleMat)
+    pos = findValue(puzzleMat, 0)
     
     # if empty tile is in the top row, the empty tile cannot move north
     if(pos[1] == len(puzzleMat[pos[1]]) - 1):
@@ -81,7 +81,7 @@ def moveEast(puzzleMat):
 # takes a puzzle matrix and returns the matrix with it's empty tile shifted west, or null if it can't be shifted
 def moveWest(puzzleMat):
     # find empty tile
-    pos = findEmpty(puzzleMat)
+    pos = findValue(puzzleMat, 0)
     
     # if empty tile is in the top row, the empty tile cannot move north
     if(pos[1] == 0):
@@ -93,6 +93,34 @@ def moveWest(puzzleMat):
         resultMat[pos[0]][pos[1]] = tempVal
         return resultMat
 # end moveWest()
+
+# takes a puzzle matrix and counts how many tiles are in the wrong position, compared to the solution matrix
+def countWrongPositions(puzzleMat):
+    wrong = 0
+    for row in range(0, len(puzzleMat)):
+        #print("row = " + str(row))
+        for col in range(0, len(puzzleMat[row])):
+            #print("col = " + str(col))
+            if(puzzleMat[row][col] != SOLUTION[row][col]):
+                wrong += 1
+                
+    return wrong
+# end countWrongPositions()
+
+# calculates the manhattan distance for every value in puzzleMat compared to the Solution Mat and returns the total
+def countManhattanDistances(puzzleMat):
+    totalDist = 0
+    for row in range(0, len(puzzleMat)):
+        #print("row = " + str(row))
+        for col in range(0, len(puzzleMat[row])):
+            #print("col = " + str(col))
+            if(puzzleMat[row][col] != SOLUTION[row][col]):
+                pos = findValue(SOLUTION, puzzleMat[row][col])
+                totalDist += abs(pos[0] - row)
+                totalDist += abs(pos[1] - col)
+                
+    return totalDist
+# end countManhattanDistances()
 
 class TreeNode:
     def __init__(self, parentNode, puzzleMat, depth, depthLimit, statesVisited):
@@ -233,4 +261,13 @@ if __name__ == "__main__":
             root.printMoves()
         else:
             print("IDS failed after " + str(root.statesVisited) + " states enqueued")
+    
+    elif(args[1] == "astar1"):
+        x = countWrongPositions(puzzleMat)
+        print(str(x))
+        
+    elif(args[1] == "astar2"):
+        x = countManhattanDistances(puzzleMat)
+        print(puzzleMat)
+        print(str(x))
 # end main()
