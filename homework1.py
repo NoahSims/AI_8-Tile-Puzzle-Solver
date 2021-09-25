@@ -122,15 +122,32 @@ def countManhattanDistances(puzzleMat):
     return totalDist
 # end countManhattanDistances()
 
+def queueLinearSearch(queue, findCost):
+    for i in range(0, len(queue)):
+        if(findCost <= queue[i].cost):
+            return i
+    
+    return len(queue)
+
 class TreeNode:
     def __init__(self, parentNode, puzzleMat, depth, depthLimit, statesVisited):
         self.parent = parentNode
         self.currentChild = None # we don't need to keep the whole tree stored in memory
         self.puzzle = puzzleMat
         self.depth = depth
+        self.cost = depth
         self.depthLimit = depthLimit
         self.statesVisited = statesVisited
     # end init()
+    
+    def compareTo(self, node):
+        if(self.cost < node.cost):
+            return -1
+        elif(self.cost > node.cost):
+            return 1
+        else:
+            return 0
+    # end compareTo
     
     def avoidRepeats(self, newPuzzle):
         parent = self.parent
@@ -184,6 +201,42 @@ class TreeNode:
         
         return False
     # end ids()
+    
+    def astar1(self):
+        queue = []
+        currentNode = self
+        
+        while(True):
+            if(np.array_equal(currentNode.puzzle, SOLUTION)):
+                currentNode.currentChild = None
+                return True
+            elif(currentNode.depth >= currentNode.depthLimit):
+                currentNode.currentChild = None
+                return False
+            else:
+                # check children
+                for i in range(0, 4):
+                    nextPuzzle = None
+                    if(i == 0):
+                        nextPuzzle = moveNorth(self.puzzle) #come back to here changing self to currentNode
+                    elif(i == 1):
+                        nextPuzzle = moveEast(self.puzzle)
+                    elif(i == 2):
+                        nextPuzzle = moveSouth(self.puzzle)
+                    elif(i == 3):
+                        nextPuzzle = moveWest(self.puzzle)
+                
+                    if(nextPuzzle is not None):
+                        #if(self.avoidRepeats(nextPuzzle)):
+                        newNode = TreeNode(self, nextPuzzle, self.depth + 1, self.depthLimit, self.statesVisited + 1)
+                        newNode.cost += countWrongPositions(nextPuzzle)
+                        if(len(queue) == 0):
+                            queue.append(newNode)
+                        else:
+                            i = queueLinearSearch(queue, newNode.cost)
+                            queue.insert(i, newNode)
+        
+        pass
     
     def printMoves(self):
         print("Initial State: ")
