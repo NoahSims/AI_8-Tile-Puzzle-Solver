@@ -194,7 +194,7 @@ class TreeNode:
         limit = self.depthLimit
         for d in range(0, limit + 1):
             self.depthLimit = d
-            print("Depth limit = " + str(self.depthLimit))
+            #print("Depth limit = " + str(self.depthLimit))
             self.statesVisited += 1 # the root node is visited multiple times
             if(self.dfs()):
                 return True
@@ -366,10 +366,10 @@ def readInput(path):
 
 if __name__ == "__main__":
     args = sys.argv
-    print(args)
+    #print(args)
     if(len(args) < 3):
         #TODO: write error msg
-        print("error")
+        print("error: cmd syntax is 'homework1' <search alg> <input file path>")
         sys.exit()
         
     lines = readInput(args[2])
@@ -402,4 +402,6 @@ if __name__ == "__main__":
             root.printMoves()
         else:
             print("A*2 failed after " + str(root.statesVisited) + " states enqueued")
+    else:
+        print("error: search algs available are - dfs, ids, astar1, astar2")
 # end main()
