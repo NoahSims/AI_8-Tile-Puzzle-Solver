@@ -360,7 +360,7 @@ def readInput(path):
     assert os.path.isfile(path)
     with open(path, "r") as f:
         lines = f.readlines()
-        print(lines)
+        #print(lines)
         return lines
 # end readInput()
 
