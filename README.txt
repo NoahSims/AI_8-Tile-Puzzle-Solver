@@ -13,7 +13,7 @@ For example - * 1 3 4 2 5 7 8 6
 Note that for input, * represents the empty tile, while during output 0 represents the empty tile
 
 Sample Input:
-![sample input](/Images/SampleInput.png)
+![sample input](Images/SampleInput.png)
 
 Sample Output:
 ![sample output](https://github.com/NoahSims/AI_HW1_SearchAlgs/blob/master/src/Images/SampleOutput.png)
