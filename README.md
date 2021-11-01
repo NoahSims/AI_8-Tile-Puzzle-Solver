@@ -7,6 +7,7 @@ algorithm_name can take one of the following values:
 - ids : For running the Iterative deepening search algorithm
 - astar1 : For running the A* algorithm with heuristic 1.
 - astar2 : For running the A* algorithm with heuristic 2.
+
 input_file_path : Path of the file containing the space separated input state as a text file.\
 For example - * 1 3 4 2 5 7 8 6\
 \
@@ -20,14 +21,14 @@ Sample Output:\
 \
 \
 Heuristics used:\
-A*1: for each node n, cost = g*(n) + h*(n), where\
-- g*(n) = depth of n\
+A*1: for each node n, cost = g*(n) + h*(n), where
+- g*(n) = depth of n
 - h*(n) = the number of tiles in n in incorrect positions\
-\
-A*2: for each node n, cost = g*(n) + h*(n), where\
-- g*(n) = depth of n\
-- h*(n) = the Manhattan distances of all tiles in n from their goal positions\
-\
+
+A*2: for each node n, cost = g*(n) + h*(n), where
+- g*(n) = depth of n
+- h*(n) = the Manhattan distances of all tiles in n from their goal positions
+
 Analysis:\
 For every input 8-puzzle I tried, these two heuristics preformed identically to each other, giving equivalent
 solutions each time, and equal numbers of states enqueued. Based on my testing, it seems that in most cases,
